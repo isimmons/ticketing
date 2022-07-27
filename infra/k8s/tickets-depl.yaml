@@ -1,0 +1,49 @@
+# tickets service base deployment configuration
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets
+  template:
+    metadata:
+      labels:
+        app: tickets
+    spec:
+      containers:
+        - name: tickets
+          image: isimmons33/ticketing-tickets
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_CLUSTER_ID
+              value: ticketing
+            - name: NATS_URL
+              value: 'http://nats-ip-srv:4222'
+            - name: MONGO_URI
+              value: 'mongodb://tickets-mongo-ip-srv:27017/tickets'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+# ClusterIp Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-ip-srv
+spec:
+  selector:
+    app: tickets
+  type: ClusterIP
+  ports:
+    - name: tickets
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

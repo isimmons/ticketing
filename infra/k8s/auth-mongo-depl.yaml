@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: auth-mongo-depl
+spec:
+  replicas: 1
+  serviceName: auth-mongo
+  selector:
+    matchLabels:
+      app: auth-mongo
+  template:
+    metadata:
+      labels:
+        app: auth-mongo
+    spec:
+      containers:
+        - name: auth-mongo
+          image: mongo
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: auth-mongo-data
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: auth-mongo-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 500Mi
+---
+# ClusterIp Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-mongo-ip-srv
+spec:
+  selector:
+    app: auth-mongo
+  type: ClusterIP
+  ports:
+    - name: auth-mongo-db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017

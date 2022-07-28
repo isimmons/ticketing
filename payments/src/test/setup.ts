@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 jest.mock('../nats-wrapper');
 
 // in real world put this in a env var on server/computer
+// TODO still need to put key in env var
+// this is only test key so not a big deal but should still be an env var
 process.env.STRIPE_KEY =
   'sk_test_51LO0hoE9tL4tefdgPwNO4ESKbPD9gNHWFNwJCzfSaphqbvmm82lUjzOLDVMWVud1SdNSxtK0amHZS6gcN5EEKGRy00asQ5O868';
 
